@@ -1,23 +1,22 @@
 // src/components/layout/Shell.tsx
+import { useState } from "react";
+import LibraryDrawer from "../library/LibraryDrawer";
+
 export default function Shell({ children }: { children: React.ReactNode }) {
+  const [showLibrary, setShowLibrary] = useState(false);
+
   return (
-    <div className="min-h-screen bg-[#901c1c] text-white flex flex-col">
-      {/* Header */}
-      <header className="px-4 py-3 border-b border-white/10 text-lg font-semibold">
-        🚀 Content Engine
+    <div className="h-screen bg-linear-to-br from-black via-[#0a0a0a] to-[#111] text-white flex flex-col">
+      <header className="px-4 py-3 border-b border-white/5 backdrop-blur-xl bg-white/5 flex justify-between">
+        <h1 className="text-sm font-semibold">Content Pulse ✨</h1>
+
+        <button onClick={() => setShowLibrary(true)}>Library</button>
       </header>
 
-      {/* Main */}
-      <main className="flex-1 p-4 space-y-4 overflow-y-auto">
-        {children}
-      </main>
+      <main className="flex-1 overflow-hidden">{children}</main>
 
-      {/* Bottom Nav */}
-      <nav className="border-t border-white/10 p-2 flex justify-around text-sm">
-        <button className="text-purple-400">Home</button>
-        <button className="text-white/60">Library</button>
-        <button className="text-white/60">Pro</button>
-      </nav>
+      {/* ONLY container, NO data */}
+      <LibraryDrawer open={showLibrary} onClose={() => setShowLibrary(false)} />
     </div>
   );
 }
