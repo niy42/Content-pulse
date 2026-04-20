@@ -1,13 +1,11 @@
 import { api } from "@/api/client";
 import { getUserId } from "@/lib/user";
 import ChatScreen from "@/pages/ChatScreen";
-import LibraryScreen from "@/pages/LibraryScreen";
 import { useState } from "react";
 
 export default function App() {
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [screen, setScreen] = useState<"chat" | "library">("chat");
 
   const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -116,18 +114,10 @@ export default function App() {
   };
 
   return (
-    <>
-      {screen === "chat" && (
-        <ChatScreen
-          messages={messages}
-          loading={loading}
-          onGenerate={handleGenerate}
-        />
-      )}
-
-      {screen === "library" && (
-        <LibraryScreen onBack={() => setScreen("chat")} />
-      )}
-    </>
+    <ChatScreen
+      messages={messages}
+      loading={loading}
+      onGenerate={handleGenerate}
+    />
   );
 }

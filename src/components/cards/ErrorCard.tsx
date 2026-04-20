@@ -10,16 +10,30 @@ export default function ErrorCard({
   text: string;
   action: string;
 }) {
+  // const [showUpgrade, setShowUpgrade] = useState<boolean>(false);
   return (
-    <Card
-      title={title}
-      actions={
-        <button className="px-3 py-1 bg-white/10 rounded-md text-sm">
-          {action}
-        </button>
-      }
-    >
-      <p>{text}</p>
-    </Card>
+    <div className="relative">
+      {" "}
+      <Card
+        title={title}
+        actions={
+          <button
+            className="px-3 py-1 bg-white/10 rounded-md text-sm"
+            // onClick={() => setShowUpgrade(true)}
+          >
+            {action}
+          </button>
+        }
+      >
+        <p>{text}</p>
+      </Card>
+      {/* {showUpgrade && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+          <div className="bg-[#111]/90 border border-white/20 p-6 rounded-lg">
+            <h2 className="text-lg font-semibold">Upgrade to Pro 🚀</h2>
+          </div>
+        </div>
+      )} */}
+    </div>
   );
 }
