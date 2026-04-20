@@ -1,0 +1,190 @@
+import { api } from "@/api/client";
+import { getUserId } from "@/lib/user";
+import { useEffect, useState } from "react";
+
+export function useChat() {
+  const [chats, setChats] = useState<any[]>([]);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const userId = getUserId();
+
+  // -------------------------
+  // 📚 Load Chats
+  // -------------------------
+  const loadChats = async () => {
+    const res = await api.get(`/chats?user_id=${userId}`);
+    setChats(res.data);
+  };
+
+  // -------------------------
+  // 💬 Open Chat
+  // -------------------------
+  const openChat = async (chatId: string) => {
+    const res = await api.get(`/chats/${chatId}`);
+    setCurrentChatId(chatId);
+    setMessages(res.data.messages);
+  };
+
+  // -------------------------
+  // ➕ New Chat
+  // -------------------------
+  const createChat = async () => {
+    const res = await api.post(`/chats`, { user_id: userId });
+    console.log("res: ", res);
+
+    setCurrentChatId(res.data.id);
+    setMessages([]);
+
+    await loadChats();
+  };
+
+  //   // -------------------------
+  //   // 🚀 Send Message
+  //   // -------------------------
+  //   const sendMessage = async (url: string) => {
+  //     if (loading) return;
+  //     let chatId = currentChatId;
+  //     try {
+  //       if (!chatId) {
+  //         const res = await api.post(`/chats`, { user_id: userId });
+  //           console.log("Result: ", res);
+  //         chatId = res.data.id;
+  //         setCurrentChatId(chatId);
+  //         setMessages([]);
+  //       }
+
+  //       // 🔥 optimistic UI
+  //       setMessages((prev) => [...prev, { role: "user", content: url }]);
+  //       setLoading(true);
+
+  //       await api.post(`/chats/${chatId}/messages`, { url });
+
+  //       pollChat(chatId);
+  //     } catch (err: any) {
+  //       setLoading(false);
+  //       // handle backend errors safely
+  //       const detail = err?.response?.data?.detail;
+  //         const message = err?.response?.data?.detail || "Something went wrong";
+  //         console.log("Detail: ", detail);
+  //         console.log("Message: ", message);
+
+  //       if (detail) {
+  //         setMessages((prev) => [
+  //           ...prev,
+  //           {
+  //             role: "assistant",
+  //             content: {
+  //               hooks: null,
+  //               insights: null,
+  //               contrarian: null,
+  //               summary: null,
+  //               error: message,
+  //             },
+  //             isError: true,
+  //           },
+  //         ]);
+  //       }
+  //     }
+  //   };
+
+  // -------------------------
+  // 🚀 Send Message
+  // -------------------------
+  const sendMessage = async (content: string) => {
+    if (loading) return;
+    let chatId = currentChatId;
+
+    try {
+      if (!chatId) {
+        const res = await api.post(`/chats`, { user_id: userId });
+        console.log("Result: ", res);
+        chatId = res.data.id;
+        setCurrentChatId(chatId);
+        setMessages([]);
+      }
+
+      // 🔥 optimistic UI
+      setMessages((prev) => [...prev, { role: "user", content }]);
+      setLoading(true);
+
+      try {
+        await api.post(`/chats/${chatId}/messages`, {
+          content,
+        });
+      } catch (err: any) {
+        const message =
+          err?.response?.data?.detail?.[0]?.msg || "Something went wrong";
+
+        // setMessages((prev) => [
+        //   ...prev,
+        //   { role: "assistant", content: { error: message } },
+        // ]);
+      }
+
+      pollChat(chatId!);
+    } catch (err: any) {
+      setLoading(false);
+      // handle backend errors safely
+      const detail = err?.response?.data?.detail;
+      const message = err?.response?.data?.detail || "Something went wrong";
+      console.log("Detail: ", detail);
+      console.log("Message: ", message);
+
+      if (detail) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: {
+              hooks: null,
+              insights: null,
+              contrarian: null,
+              summary: null,
+              error: message,
+              title: err?.response?.data?.title,
+              action: err?.response?.status === 403 ? "Upgrade Plan" : null,
+            },
+            isError: true,
+          },
+        ]);
+      }
+    }
+  };
+
+  // -------------------------
+  // 🔄 Polling (simple)
+  // -------------------------
+  const pollChat = (chatId: string | null) => {
+    const interval = setInterval(async () => {
+      const res = await api.get(`/chats/${chatId}`);
+      const msgs = res.data.messages;
+
+      setMessages(msgs);
+
+      const last = msgs[msgs.length - 1];
+
+      if (last?.role === "assistant") {
+        setLoading(false);
+        clearInterval(interval);
+        loadChats(); // update sidebar title
+      }
+    }, 1500);
+  };
+
+  // -------------------------
+  useEffect(() => {
+    loadChats();
+  }, []);
+
+  return {
+    chats,
+    currentChatId,
+    messages,
+    loading,
+    createChat,
+    openChat,
+    sendMessage,
+  };
+}

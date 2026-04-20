@@ -26,3 +26,33 @@
   box-shadow: none !important;
   width: 0px;
 }
+
+/* @keyframes slideRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slideRight {
+  animation: slideRight 0.25s ease-out;
+} */
+
+@keyframes slideRight {
+  from {
+    transform: translateX(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-slideRight {
+  animation: slideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}

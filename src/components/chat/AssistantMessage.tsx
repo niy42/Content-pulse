@@ -39,9 +39,9 @@ export default function AssistantMessage({
         )}
         {data.error && (
           <ErrorCard
-            title="LIMIT REACHED"
+            title={data.title}
             text={data.error}
-            action="Upgrade Plan"
+            action={data.action}
           />
         )}
       </motion.div>
