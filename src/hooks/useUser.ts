@@ -7,19 +7,29 @@ export function useUser() {
 
   const fetchUser = useCallback(async () => {
     const userId = getUserId();
+    if (!userId) {
+      setUser(null);
+      return;
+    }
 
-    const res = await api.get("/me", {
-      headers: {
-        "x-user-id": userId,
-      },
-    });
+    try {
+      const res = await api.get("/me", {
+        headers: { "x-user-id": userId },
+      });
+      setUser(res.data);
+    } catch (err) {
+      console.error(err);
+      setUser(null);
+    }
+  }, []); // still empty — we don't want to recreate the function unnecessarily
 
-    setUser(res.data);
-  }, []);
-
+  // Key change: depend on the actual source of truth (userId)
   useEffect(() => {
     fetchUser();
-  }, [fetchUser]);
+  }, [fetchUser]); // or better, depend directly on userId if you can
+
+  // Even better pattern — depend on userId directly:
+  // const userId = getUserId(); // but avoid calling on every render if expensive
 
   return { user, refreshUser: fetchUser };
 }

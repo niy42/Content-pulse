@@ -41,6 +41,7 @@ export default function AssistantMessage({
           <ErrorCard
             title={data.title}
             text={data.error}
+            subMessage={data.subMessage}
             action={data.action}
           />
         )}

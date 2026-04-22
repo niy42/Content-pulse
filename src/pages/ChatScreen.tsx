@@ -1,5 +1,7 @@
 import AssistantMessage from "@/components/chat/AssistantMessage";
 import UserMessage from "@/components/chat/UserMessage";
+import { AnimatedCollapse } from "@/components/ui/AnimatedCollapse";
+import { CollapseHeader } from "@/components/ui/CollapseHeader";
 import UserStats from "@/components/ui/UserStats";
 import { useChatContext } from "@/context/ChatContext";
 import { useToast } from "@/context/ToastProvider";
@@ -12,8 +14,20 @@ export default function Home() {
   const [content, setContent] = useState("");
   const { messages, loading, sendMessage } = useChatContext();
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const [showStats, setShowStats] = useState(true);
   const { user, refreshUser } = useUser();
   const { showToast } = useToast();
+
+  // Refresh user when generation finishes
+  useEffect(() => {
+    if (!loading && messages.length > 0) {
+      // Only refresh if the last message is from the assistant (generation done)
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage?.role === "assistant") {
+        refreshUser();
+      }
+    }
+  }, [loading, messages, refreshUser]); // ← key effect
 
   // 🔥 Auto-scroll like ChatGPT
   useEffect(() => {
@@ -27,8 +41,18 @@ export default function Home() {
   return (
     <Shell>
       <div className="flex flex-col h-[calc(100vh-60px)]">
-        <div className="p-4 border-b border-white/10">
-          <UserStats user={user} />
+        <div className="border-b border-white/10">
+          <CollapseHeader
+            title="Profile"
+            isOpen={showStats}
+            onToggle={() => setShowStats((v) => !v)}
+          />
+
+          <div className="px-4 pb-4">
+            <AnimatedCollapse isOpen={showStats}>
+              <UserStats user={user} />
+            </AnimatedCollapse>
+          </div>
         </div>
         {/* Chat Feed */}
         <div className="flex-1 overflow-y-auto space-y-6 p-6">
@@ -97,7 +121,6 @@ export default function Home() {
                   return;
                 }
                 sendMessage(content);
-                refreshUser();
                 setContent("");
               }}
               className="px-5 rounded-xl bg-linear-to-r from-purple-600 to-indigo-600 hover:opacity-90 transition"

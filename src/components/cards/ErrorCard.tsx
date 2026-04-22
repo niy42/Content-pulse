@@ -3,12 +3,14 @@ import Card from "../ui/Card";
 
 export default function ErrorCard({
   title = "Error",
+  subMessage,
   text,
   action,
 }: {
   title: string;
   text: string;
   action: string;
+  subMessage?: string;
 }) {
   // const [showUpgrade, setShowUpgrade] = useState<boolean>(false);
   return (
@@ -26,6 +28,7 @@ export default function ErrorCard({
         }
       >
         <p>{text}</p>
+        <p>{subMessage}</p>
       </Card>
       {/* {showUpgrade && (
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
