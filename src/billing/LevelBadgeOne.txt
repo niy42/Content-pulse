@@ -74,7 +74,7 @@ export function LevelBadgeOne({ level }: BadgeProps) {
 
       <div className="flex items-center gap-0.5">
         {Array.from({ length: MAX_STARS }).map((_, i) => {
-          const unlocked = i < animatedStars;
+          // const unlocked = i < animatedStars;
 
           return (
             <motion.div

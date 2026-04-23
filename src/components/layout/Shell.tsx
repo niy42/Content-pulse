@@ -13,9 +13,9 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     <div className="h-screen bg-linear-to-br from-black via-[#0a0a0a] to-[#111] text-white flex flex-col">
       <header className="px-4 py-3 border-b border-white/5 backdrop-blur-xl bg-white/5 flex justify-between">
         <h1 className="text-sm font-semibold">QuiFlow</h1>
-
+        {/* ACTIONS */}
         <div className="flex gap-2">
-          <button onClick={createChat} className="text-sm">
+          <button onClick={createChat} className="text-xs">
             New Flow
           </button>
 

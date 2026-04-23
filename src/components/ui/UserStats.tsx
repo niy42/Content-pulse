@@ -15,17 +15,17 @@ type User = {
 };
 
 export default function UserStats({ user }: { user: User }) {
-  if (!user) return null;
+  // if (!user) return null;
 
-  const safeLevel = user.level ?? 0; // Handle undefined level gracefully
+  const safeLevel = user?.level ?? 0; // Handle undefined level gracefully
 
   // ----------------------------
   // SAFE CALCULATIONS
   // ----------------------------
   const usagePercent = useMemo(() => {
-    if (!user.requests_limit) return 0;
+    if (!user?.requests_limit) return 0;
     return Math.min(100, (user.requests_used / user.requests_limit) * 100);
-  }, [user.requests_used, user.requests_limit]);
+  }, [user?.requests_used, user?.requests_limit]);
 
   // const xpPercent = useMemo(() => {
   //   if (!user.next_level_xp) return 0;
@@ -52,17 +52,17 @@ export default function UserStats({ user }: { user: User }) {
   // ----------------------------
   // SMOOTH XP ANIMATION (UX LAYER ONLY)
   // ----------------------------
-  const [animatedXP, setAnimatedXP] = useState(user.xp);
-  const prevXPRef = useRef(user.xp);
+  const [animatedXP, setAnimatedXP] = useState(user?.xp);
+  const prevXPRef = useRef(user?.xp);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setAnimatedXP(user.xp);
-      prevXPRef.current = user.xp;
+      setAnimatedXP(user?.xp);
+      prevXPRef.current = user?.xp;
     }, 80);
 
     return () => clearTimeout(timeout);
-  }, [user.xp]);
+  }, [user?.xp]);
 
   // ----------------------------
   // RANK SYSTEM
@@ -135,7 +135,7 @@ export default function UserStats({ user }: { user: User }) {
       ======================= */}
       <div className="flex justify-between items-center">
         <span className="text-xs px-3 py-1 rounded-full bg-white/10">
-          {(user.plan ?? "free").toUpperCase()}
+          {(user?.plan ?? "free").toUpperCase()}
         </span>
 
         <motion.span
@@ -154,7 +154,7 @@ export default function UserStats({ user }: { user: User }) {
       ======================= */}
       <XPBar
         currentXP={animatedXP}
-        maxXP={user.next_level_xp ?? 0}
+        maxXP={user?.next_level_xp ?? 0}
         level={safeLevel}
       />
 
@@ -165,7 +165,7 @@ export default function UserStats({ user }: { user: User }) {
         <div className="flex justify-between text-[10px] text-white/60 mb-1">
           <span>Usage</span>
           <span>
-            {user.requests_used}/{user.requests_limit}
+            {user?.requests_used}/{user?.requests_limit}
           </span>
         </div>
 
@@ -191,7 +191,7 @@ export default function UserStats({ user }: { user: User }) {
         )} */}
         <span className="text-xs text-orange-400 flex items-center gap-1">
           <Flame className="w-3.5 h-3.5" />
-          {user.streak}d
+          {user?.streak}d
         </span>
       </div>
     </div>
