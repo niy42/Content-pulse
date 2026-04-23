@@ -12,11 +12,13 @@ import Shell from "../components/layout/Shell";
 
 export default function Home() {
   const [content, setContent] = useState("");
-  const { messages, loading, sendMessage } = useChatContext();
+  const { messages, loading, createChat, sendMessage } = useChatContext();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const [showStats, setShowStats] = useState(true);
   const { user, refreshUser } = useUser();
   const { showToast } = useToast();
+
+  console.log("User: ", user);
 
   // Refresh user when generation finishes
   useEffect(() => {
@@ -120,6 +122,7 @@ export default function Home() {
                   showToast("Please enter a valid YouTube link");
                   return;
                 }
+                createChat();
                 sendMessage(content);
                 setContent("");
               }}

@@ -3,6 +3,7 @@ import { useChatContext } from "@/context/ChatContext";
 import { Menu } from "lucide-react";
 import { useState } from "react";
 import LibraryDrawer from "../library/LibraryDrawer";
+import { LevelUpOverlay } from "../ui/LevelupOverlay";
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const [showLibrary, setShowLibrary] = useState(false);
@@ -26,7 +27,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </button>
         </div>
       </header>
-
+      <LevelUpOverlay />
       <main className="flex-1 overflow-hidden">{children}</main>
 
       {/* ONLY container, NO data */}

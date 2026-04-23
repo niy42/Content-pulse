@@ -1,6 +1,9 @@
 import { api } from "@/api/client";
+import { useUI } from "@/context/UIContext";
+import { useUser } from "@/hooks/useUser";
 import { getUserId } from "@/lib/user";
 import { useEffect, useRef, useState } from "react";
+// import { useUser } from "./useUser";
 
 type Message = {
   role: "user" | "assistant";
@@ -21,7 +24,8 @@ export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const loadingChatsRef = useRef(false);
-
+  const { setUser } = useUser();
+  const { showLevelUp, showXPToast } = useUI();
   const userId = getUserId();
 
   // 🔥 refs
@@ -100,6 +104,42 @@ export function useChat() {
     }
   };
 
+  async function triggerXP(action: string) {
+    const userId = getUserId();
+
+    const res = await api.post("/xp", {
+      user_id: userId,
+      action,
+    });
+
+    return res.data;
+  }
+
+  // async function handleXP() {
+  //   try {
+  //     const res = await api.post("/xp", {
+  //       user_id: getUserId(),
+  //       action: "content_generated",
+  //     });
+
+  //     const data = res.data;
+
+  //     // ✅ update global user state
+  //     setUser((prev: any) => ({
+  //       ...prev,
+  //       xp: data.xp,
+  //       level: data.level,
+  //       next_level_xp: data.next_level_xp,
+  //     }));
+
+  //     // (optional) trigger global effects later
+  //     // showXPToast(data.xp_gained);
+  //     // showLevelUp(data.level);
+  //   } catch (err) {
+  //     console.error("XP error:", err);
+  //   }
+  // }
+
   // -------------------------
   // ⚡ STREAM CHAT (SSE)
   // -------------------------
@@ -144,6 +184,33 @@ export function useChat() {
         messagesCache.current[chatId] = updated;
         return updated;
       });
+    });
+
+    // -------------------------
+    // 🧠 XP UPDATE (NEW)
+    // -------------------------
+    es.addEventListener("xp_update", (event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+
+      setUser((prev: any) => ({
+        ...prev,
+        xp: data.xp,
+        level: data.level,
+        next_level_xp: data.next_level_xp,
+      }));
+
+      // optional UX
+      showXPToast(data.xp_gained);
+    });
+
+    // -------------------------
+    // 🚀 LEVEL UP (NEW)
+    // -------------------------
+    es.addEventListener("level_up", (event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+
+      // optional UX
+      showLevelUp(data.level);
     });
 
     // end
@@ -282,6 +349,7 @@ export function useChat() {
     sendMessage,
     deleteChat,
     renameChat,
+    triggerXP,
     loadChats, // exposed
   };
 }

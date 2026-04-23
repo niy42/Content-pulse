@@ -17,7 +17,7 @@ type User = {
 export default function UserStats({ user }: { user: User }) {
   if (!user) return null;
 
-  const safeLevel = user.level ?? 12;
+  const safeLevel = user.level ?? 0; // Handle undefined level gracefully
 
   // ----------------------------
   // SAFE CALCULATIONS
@@ -52,7 +52,7 @@ export default function UserStats({ user }: { user: User }) {
   // ----------------------------
   // SMOOTH XP ANIMATION (UX LAYER ONLY)
   // ----------------------------
-  const [animatedXP, setAnimatedXP] = useState(user.xp ?? 4);
+  const [animatedXP, setAnimatedXP] = useState(user.xp);
   const prevXPRef = useRef(user.xp);
 
   useEffect(() => {
@@ -152,7 +152,11 @@ export default function UserStats({ user }: { user: User }) {
       {/* =======================
           XP BAR (PRIMARY SYSTEM)
       ======================= */}
-      <XPBar currentXP={4} maxXP={user.next_level_xp ?? 10} level={safeLevel} />
+      <XPBar
+        currentXP={animatedXP}
+        maxXP={user.next_level_xp ?? 0}
+        level={safeLevel}
+      />
 
       {/* =======================
           USAGE BAR (SECONDARY)
@@ -182,9 +186,9 @@ export default function UserStats({ user }: { user: User }) {
         {/* <span className="text-xs text-white/50">{rankLabel}</span> */}
         <LevelBadge level={safeLevel} />
 
-        {typeof user.streak === "number" && user.streak > 0 && (
+        {/* {typeof user.streak === "number" && user.streak > 0 && (
           <span className="text-xs text-orange-400">🔥 {user.streak}d</span>
-        )}
+        )} */}
         <span className="text-xs text-orange-400 flex items-center gap-1">
           <Flame className="w-3.5 h-3.5" />
           {user.streak}d

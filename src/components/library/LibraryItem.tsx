@@ -1,4 +1,5 @@
 import { useChatContext } from "@/context/ChatContext";
+import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export default function LibraryItem({
@@ -47,23 +48,25 @@ export default function LibraryItem({
         </div>
 
         {/* Actions */}
-        <div className="group-hover:flex gap-2 text-xs">
+        <div className="group-hover:flex items-center gap-2 text-white/60">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setEditing(true);
             }}
+            className="hidden p-1 hover:text-white transition"
           >
-            ✏️
+            <Pencil size={16} />
           </button>
 
           <button
             onClick={(e) => {
               e.stopPropagation();
-              deleteChat(chat.id); // ✅ correct place
+              deleteChat(chat.id);
             }}
+            className="p-1 hover:text-red-400 transition"
           >
-            🗑️
+            <Trash2 size={16} />
           </button>
         </div>
       </div>

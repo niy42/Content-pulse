@@ -52,7 +52,7 @@ export default function LibraryDrawer({
       </div>
 
       {/* Content */}
-      <div className="p-3 space-y-4 overflow-y-auto">
+      <div className="p-3 h-[calc(100vh-64px)] overflow-y-auto">
         {chats.length === 0 ? (
           <div className="space-y-2">
             {[...Array(5)].map((_, i) => (
